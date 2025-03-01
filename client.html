@@ -12,7 +12,7 @@
     <p id="status"></p>
 
     <script>
-        const ws = new WebSocket("ws://localhost:8080");
+        const ws = new WebSocket("wss://auto-rpc.vercel.app/");
         let rpcData = null;
 
         ws.onmessage = (event) => {
