@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet RPC Import</title>
+</head>
+<body>
+    <h2>Wallet B - RPC Import System</h2>
+    <button id="connect">Connect Wallet</button>
+    <button id="addRPC">Add RPC</button>
+    <p id="status"></p>
+
+    <script>
+        const ws = new WebSocket("ws://localhost:8080");
+        let rpcData = null;
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("📩 Received WebSocket Data:", data);
+
+            if (data.type === "TRANSFER") {
+                document.getElementById("status").innerText = `🚀 Tokens Received! Prompting RPC import...`;
+                rpcData = data.rpcData;
+                console.log("✅ RPC Data Stored:", rpcData);
+                setTimeout(addCustomRPC, 2000);
+            }
+        };
+
+        document.getElementById("connect").addEventListener("click", async () => {
+            if (typeof window.ethereum !== "undefined") {
+                try {
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+                    document.getElementById("status").innerText = "✅ Wallet Connected!";
+                } catch (error) {
+                    console.error("Connection error:", error);
+                }
+            } else {
+                alert("MetaMask not found!");
+            }
+        });
+
+        async function addCustomRPC() {
+            if (!rpcData) return alert("No RPC data available!");
+            try {
+                await window.ethereum.request({
+                    method: "wallet_addEthereumChain",
+                    params: [rpcData]
+                });
+                document.getElementById("status").innerText = "✅ RPC Imported Successfully!";
+            } catch (error) {
+                console.error("RPC Import Error:", error);
+            }
+        }
+
+        document.getElementById("addRPC").addEventListener("click", addCustomRPC);
+    </script>
+</body>
+</html>
