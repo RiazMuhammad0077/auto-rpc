@@ -5,7 +5,7 @@ const { ethers } = require("ethers");
 const WebSocket = require("ws");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 // WebSocket Server
